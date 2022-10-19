@@ -1,85 +1,63 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { defineComponent } from "vue";
+import carparkData from "@/assets/carparks.json";
+import proj4 from "proj4";
+
+export default defineComponent({
+  mounted() {
+    if ("geolocation" in navigator) {
+      /* geolocation is available */
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.currentLocation.long = position.coords.longitude;
+        this.currentLocation.lat = position.coords.latitude;
+        console.log(position.coords);
+      });
+    } else {
+      /* geolocation IS NOT available */
+    }
+    this.axios
+      .get("https://api.data.gov.sg/v1/transport/carpark-availability")
+      .then((data) => {
+        for (let carpark of data.data.items[0].carpark_data) {
+          for (let c of carparkData) {
+            if (c.car_park_no === carpark.carpark_number) {
+              console.log(carpark.carpark_info[0].lots_available, c.address);
+            }
+          }
+        }
+      });
+  },
+  data() {
+    return {
+      currentLocation: {
+        long: 103.852119,
+        lat: 1.296568,
+      },
+      carparkData,
+    };
+  },
+  computed: {
+    centerLocation() {
+      return [this.currentLocation.long, this.currentLocation.lat];
+    },
+  },
+});
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <!-- <div>
+    <div v-for="data in carparkData">{{ data.car_park_no }}</div>
+  </div> -->
+  <mapbox-map
+    style="width: 100vw; height: 100vh"
+    mapStyle="navigation-day-v1"
+    :center="centerLocation"
+    :zoom="16"
+  >
+    <mapbox-geolocate-control />
+    <mapbox-navigation-control position="bottom-left" />
+  </mapbox-map>
+  <!-- <RouterView /> -->
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+<style scoped></style>
