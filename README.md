@@ -1,46 +1,18 @@
 # carter
 
-This template should help get you started developing with Vue 3 in Vite.
+![screenshot](images/screenshot.png)
 
-## Recommended IDE Setup
+With the rising car prices currently, rental cars have been in trend, such as GetGo or BlueSG. However, we would like to provide an opportunity for car owners to earn extra income. Hence, our app allows car owners to rent out their cars using our platform, earning them a couple extra bucks, to survive the increasing expenses of owning a car.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+When rentees go out, they do not have easy access to information on the ideal car park: which car park has the best rates, the nearest to us, and has ample available lots. We want to reduce the rentees’ time spent searching for lots or waiting for lots to be vacant by recommending carparks that have available lots in the vicinity of the rentees.
 
-## Type Support for `.vue` Imports in TS
+Our app also provides GPS services for rentees to find their destination and at the same time recommends nearby points of interest for them to visit. Rentees are also able to track their cost they are incurring as they are renting the car.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+## Objectives
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+1. Rental of cars
+2. Carpark recommender
+3. Cost Tracker
+4. Routing
+5. Point of interest recommendation
+6. Text to Speech for searching options while driving or readback to drivers when they are driving (optional)
