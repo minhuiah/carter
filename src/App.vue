@@ -115,52 +115,30 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
-    style="
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-    "
-  >
-    <div
-      style="
-        position: absolute;
-        z-index: 10;
-        margin: 5rem;
-        width: 400px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        background-color: #fefefe;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-          0 8px 10px -6px rgba(0, 0, 0, 0.1);
-      "
-    >
+  <div class="app">
+    <div class="panel">
       <div class="panel-header">Carter</div>
-      <div>
-        <div class="panel-description">
-          <img class="logo" src="./assets/images/logo.png" />
-          <div class="panel-description-text">
-            <h1 class="panel-title">Welcome to Carter!</h1>
-            <p class="panel-text">This web app allows you to:</p>
-            <ul class="panel-text-list">
-              <li>View carparks and its lot availability near you</li>
-              <li>View rental cars near you</li>
-              <li>Calculate cost for a trip</li>
-              <li>Routing</li>
-              <li>View Point of Interests around you</li>
-            </ul>
-            <p class="panel-text">
-              This project is built with Vue JS and it is
-              <a target="_blank" href="https://github.com/19hours/carter"
-                >open source.</a
-              >
-            </p>
-          </div>
+      <div
+        class="panel-description"
+        v-show="!selectedCarpark || Object.keys(selectedCarpark).length === 0"
+      >
+        <img class="logo" src="./assets/images/logo.png" />
+        <div class="panel-description-text">
+          <h1 class="panel-title">Welcome to Carter!</h1>
+          <p class="panel-text">This web app allows you to:</p>
+          <ul class="panel-text-list">
+            <li>View carparks and its lot availability near you</li>
+            <li>View rental cars near you</li>
+            <li>Calculate cost for a trip</li>
+            <li>Routing</li>
+            <li>View Point of Interests around you</li>
+          </ul>
+          <p class="panel-text">
+            This project is built with Vue JS and it is
+            <a target="_blank" href="https://github.com/19hours/carter"
+              >open source.</a
+            >
+          </p>
         </div>
       </div>
       <div
@@ -290,6 +268,27 @@ export default defineComponent({
 </template>
 
 <style scoped>
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+}
+.panel {
+  position: absolute;
+  z-index: 10;
+  margin: 5rem;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
 .logo {
   height: 120px;
   width: 120px;
@@ -356,6 +355,7 @@ export default defineComponent({
   padding: 1rem;
   width: 100%;
   box-sizing: border-box;
+  overflow: scroll;
 }
 .carpark-row {
   display: flex;
@@ -391,5 +391,38 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@media (max-width: 960px) {
+  .app {
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .panel {
+    max-width: 100vw;
+    margin-bottom: 0rem;
+    max-height: 50vh;
+    -webkit-backdrop-filter: blur(10px) saturate(3);
+    -webkit-backdrop-filter: blur(10px) saturate(3);
+    backdrop-filter: blur(10px) saturate(3);
+    background-color: #ffffffb3;
+  }
+  .panel-title {
+    font-size: 1.2rem;
+  }
+  .logo {
+    width: 60px;
+    height: 60px;
+  }
+  .panel-text,
+  .panel-text-list {
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+  }
+  .carpark-row {
+    margin-bottom: 0.7rem;
+  }
+  .carpark-detail {
+    font-size: 0.8rem;
+  }
 }
 </style>
