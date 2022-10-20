@@ -7,7 +7,7 @@ import axios from "axios";
 import App from "./App.vue";
 import router from "./router";
 
-import "./assets/main.css";
+import "./assets/css/main.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const app = createApp(App);

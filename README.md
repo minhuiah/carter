@@ -1,3 +1,5 @@
+![logo](src/assets/images/logo.png)
+
 # carter
 
 ![screenshot](images/screenshot.png)

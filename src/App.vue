@@ -1,14 +1,16 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import rawCarparkData from "@/assets/carparks.json";
+import rawCarparkData from "@/assets/data/carparks.json";
 import proj4 from "proj4";
 import { Icon } from "@vicons/utils";
 import {
   MapMarkerAlt,
   Car,
-  LevelUpAlt,
+  Buffer,
   ArrowsAltV,
   LocationArrow,
+  DollarSign,
+  Sort,
 } from "@vicons/fa";
 
 interface Carpark {
@@ -31,9 +33,11 @@ export default defineComponent({
     Icon,
     MapMarkerAlt,
     Car,
-    LevelUpAlt,
+    Buffer,
     ArrowsAltV,
     LocationArrow,
+    DollarSign,
+    Sort,
   },
   mounted() {
     if ("geolocation" in navigator) {
@@ -125,7 +129,7 @@ export default defineComponent({
         position: absolute;
         z-index: 10;
         margin: 5rem;
-        width: 360px;
+        width: 400px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -137,7 +141,28 @@ export default defineComponent({
       "
     >
       <div class="panel-header">Carter</div>
-      hello world
+      <div>
+        <div class="panel-description">
+          <img class="logo" src="./assets/images/logo.png" />
+          <div class="panel-description-text">
+            <h1 class="panel-title">Welcome to Carter!</h1>
+            <p class="panel-text">This web app allows you to:</p>
+            <ul class="panel-text-list">
+              <li>View carparks and its lot availability near you</li>
+              <li>View rental cars near you</li>
+              <li>Calculate cost for a trip</li>
+              <li>Routing</li>
+              <li>View Point of Interests around you</li>
+            </ul>
+            <p class="panel-text">
+              This project is built with Vue JS and it is
+              <a target="_blank" href="https://github.com/19hours/carter"
+                >open source.</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
       <div
         class="carpark-info"
         v-show="selectedCarpark && Object.keys(selectedCarpark).length !== 0"
@@ -148,11 +173,9 @@ export default defineComponent({
           </Icon>
           <div class="carpark-detail">{{ selectedCarpark.address }}</div>
         </div>
-        <button class="carpark-btn">
+        <button class="carpark-btn" @click="goToGoogleMaps()">
           <Icon><LocationArrow /></Icon>
-          <span
-            @click="goToGoogleMaps()"
-            style="margin-left: 0.5rem; font-weight: bold"
+          <span style="margin-left: 0.5rem; font-weight: bold"
             >Get Directions</span
           >
         </button>
@@ -211,7 +234,7 @@ export default defineComponent({
         </div>
         <div class="carpark-row">
           <Icon>
-            <LevelUpAlt />
+            <Buffer />
           </Icon>
           <div class="carpark-detail">
             Decks: {{ selectedCarpark.carParkDecks }}
@@ -225,16 +248,25 @@ export default defineComponent({
             Height Restrictions: {{ selectedCarpark.gantryHeight }} m
           </div>
         </div>
-        <div>free parking: {{ selectedCarpark.freeParking }}</div>
-        <div>short term parking: {{ selectedCarpark.shortTermParking }}</div>
-        <div>night parking: {{ selectedCarpark.nightParking }}</div>
-        <div>gantry height: {{ selectedCarpark.gantryHeight }}m</div>
-        <div>type: {{ selectedCarpark.type }}</div>
+        <div class="carpark-row">
+          <Icon>
+            <DollarSign />
+          </Icon>
+          <div class="carpark-detail">
+            Free Parking: {{ selectedCarpark.freeParking }}
+          </div>
+        </div>
+        <div class="carpark-row">
+          <Icon>
+            <Sort />
+          </Icon>
+          <div class="carpark-detail">Type: {{ selectedCarpark.type }}</div>
+        </div>
       </div>
     </div>
     <mapbox-map
       style="width: 100vw; height: 100vh; z-index: 0"
-      mapStyle="navigation-night-v1"
+      mapStyle="streets-v11"
       :center="centerLocation"
       :zoom="16"
       accessToken="pk.eyJ1IjoiMWhpdW9uaiIsImEiOiJjbDlhcnNha2MwbWRtM3BxdDJ1d2psNTF5In0.3I_UAtOyTVSwLev2yEua8w"
@@ -258,6 +290,10 @@ export default defineComponent({
 </template>
 
 <style scoped>
+.logo {
+  height: 120px;
+  width: 120px;
+}
 .panel-header {
   background-color: #2e42a8;
   color: #ffffff;
@@ -267,6 +303,31 @@ export default defineComponent({
   text-align: center;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
+}
+.panel-description {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+}
+.panel-description-text {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-left: 1.4rem;
+}
+.panel-title {
+  font-size: 1.5rem;
+}
+.panel-text {
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+.panel-text-list {
+  list-style-type: lower-alpha;
+  font-size: 0.9rem;
+  list-style-position: inside;
+  margin-bottom: 1rem;
 }
 .carpark-icon {
   height: 2rem;
@@ -294,6 +355,7 @@ export default defineComponent({
   flex-direction: column;
   padding: 1rem;
   width: 100%;
+  box-sizing: border-box;
 }
 .carpark-row {
   display: flex;
