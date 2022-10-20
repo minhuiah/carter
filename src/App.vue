@@ -40,29 +40,17 @@ export default defineComponent({
     Sort,
   },
   mounted() {
-    // if ("geolocation" in navigator) {
-    /* geolocation is available */
-    // navigator.geolocation.getCurrentPosition((position) => {
-    //   this.currentLocation.long = position.coords.longitude;
-    //   this.currentLocation.lat = position.coords.latitude;
-    //   console.log(position.coords);
-    // });
-    // } else {
-    /* geolocation IS NOT available */
-    // }
     this.axios
       .get("https://api.data.gov.sg/v1/transport/carpark-availability")
       .then((data) => {
         for (let carpark of data.data.items[0].carpark_data) {
           for (let c of rawCarparkData) {
             if (c.car_park_no === carpark.carpark_number) {
-              // console.log(carpark);
               let coords = proj4(
                 "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs",
                 "+proj=longlat +datum=WGS84 +no_defs",
                 [c.x_coord, c.y_coord]
               );
-              // console.log(carpark.carpark_info[0].lots_available, c.address);
               this.carparkData.push({
                 lat: coords[0],
                 lng: coords[1],
@@ -153,59 +141,18 @@ export default defineComponent({
         </div>
         <button class="carpark-btn" @click="goToGoogleMaps()">
           <Icon><LocationArrow /></Icon>
-          <span style="margin-left: 0.5rem; font-weight: bold"
-            >Get Directions</span
-          >
+          <span class="carpark-btn-text">Get Directions</span>
         </button>
         <div class="carpark-row">
           <Icon>
             <Car />
           </Icon>
           <div class="carpark-detail">
-            <div
-              style="
-                padding: 0 2px 0 6px;
-                background-color: green;
-                color: white;
-                font-weight: bold;
-                border-top-left-radius: 5px;
-                border-bottom-left-radius: 5px;
-                font-size: 13px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
+            <div class="available-lots">
               {{ selectedCarpark.availableLots }}
             </div>
-            <div
-              style="
-                padding: 0px 6px;
-                background-color: #2e42a8;
-                color: white;
-                font-weight: bold;
-                font-size: 13px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              /
-            </div>
-            <div
-              style="
-                padding: 0 6px 0 0;
-                background-color: #2e42a8;
-                color: white;
-                font-weight: bold;
-                border-top-right-radius: 5px;
-                border-bottom-right-radius: 5px;
-                font-size: 13px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
+            <div class="dash-lots">/</div>
+            <div class="total-lots">
               {{ selectedCarpark.totalLots }}
             </div>
           </div>
@@ -243,7 +190,7 @@ export default defineComponent({
       </div>
     </div>
     <mapbox-map
-      style="width: 100vw; height: 100vh; z-index: 0"
+      class="map"
       mapStyle="streets-v11"
       :center="centerLocation"
       :zoom="16"
@@ -268,12 +215,21 @@ export default defineComponent({
 </template>
 
 <style scoped>
+body {
+  max-height: 100vh;
+  width: 100%;
+}
 .app {
   width: 100vw;
   height: 100vh;
   position: relative;
   display: flex;
   align-items: flex-start;
+}
+.map {
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
 }
 .panel {
   position: absolute;
@@ -391,6 +347,44 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.available-lots {
+  padding: 0 2px 0 6px;
+  background-color: green;
+  color: white;
+  font-weight: bold;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dash-lots {
+  padding: 0px 6px;
+  background-color: #2e42a8;
+  color: white;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.total-lots {
+  padding: 0 6px 0 0;
+  background-color: #2e42a8;
+  color: white;
+  font-weight: bold;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.carpark-btn-text {
+  margin-left: 0.5rem;
+  font-weight: bold;
 }
 @media (max-width: 960px) {
   .app {
