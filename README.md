@@ -16,3 +16,7 @@ Our app also provides GPS services for rentees to find their destination and at 
 4. Routing
 5. Point of interest recommendation
 6. Text to Speech for searching options while driving or readback to drivers when they are driving (optional)
+
+## Deployment
+
+This web app is deployed automatically to Cloudflare pages.
