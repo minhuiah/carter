@@ -40,16 +40,16 @@ export default defineComponent({
     Sort,
   },
   mounted() {
-    if ("geolocation" in navigator) {
-      /* geolocation is available */
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currentLocation.long = position.coords.longitude;
-        this.currentLocation.lat = position.coords.latitude;
-        console.log(position.coords);
-      });
-    } else {
-      /* geolocation IS NOT available */
-    }
+    // if ("geolocation" in navigator) {
+    /* geolocation is available */
+    // navigator.geolocation.getCurrentPosition((position) => {
+    //   this.currentLocation.long = position.coords.longitude;
+    //   this.currentLocation.lat = position.coords.latitude;
+    //   console.log(position.coords);
+    // });
+    // } else {
+    /* geolocation IS NOT available */
+    // }
     this.axios
       .get("https://api.data.gov.sg/v1/transport/carpark-availability")
       .then((data) => {
