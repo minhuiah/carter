@@ -24,8 +24,8 @@ interface Carpark {
   shortTermParking: string;
   freeParking: string;
   nightParking: boolean;
-  carParkDecks: number;
-  gantryHeight: number;
+  carParkDecks: string;
+  gantryHeight: string;
 }
 
 export default defineComponent({
@@ -57,11 +57,16 @@ export default defineComponent({
                 availableLots: carpark.carpark_info[0].lots_available,
                 totalLots: carpark.carpark_info[0].total_lots,
                 address: c.address,
-                type: c.car_park_type,
-                system: c.type_of_parking_system,
-                shortTermParking: c.short_term_parking,
+                type:
+                  c.car_park_type === -1
+                    ? "Basement"
+                    : c.car_park_type === 0
+                    ? "Surface"
+                    : "MSCP",
+                system: c.type_of_parking_system === 0 ? "Coupon" : "EPS",
+                shortTermParking: c.short_term_parking === 0 ? "No" : "Yes",
                 freeParking: c.free_parking,
-                nightParking: c.night_parking === "YES",
+                nightParking: c.night_parking === 0 ? false : true,
                 carParkDecks: c.car_park_decks,
                 gantryHeight: c.gantry_height,
               });
@@ -106,6 +111,11 @@ export default defineComponent({
   <div class="app">
     <div class="panel">
       <div class="panel-header">Carter</div>
+      <div>
+        <button>Carpark</button>
+        <button>Car Rental</button>
+        <button></button>
+      </div>
       <div
         class="panel-description"
         v-show="!selectedCarpark || Object.keys(selectedCarpark).length === 0"
