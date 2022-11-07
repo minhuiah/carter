@@ -76,7 +76,7 @@
             </svg>
             <span class="list-btn-text">Get Directions</span>
           </div>
-          <div class="list-btn">
+          <div @click="trackCost(carpark.address)" class="list-btn">
             <svg
               class="list-btn-icon"
               xmlns="http://www.w3.org/2000/svg"
@@ -186,6 +186,9 @@ export default defineComponent({
     },
     bookRentalCar() {
       window.open("https://membership.bluesg.com.sg/account/home/");
+    },
+    trackCost(address: string) {
+      this.$router.push({ name: "costs", params: { address } });
     },
   },
   computed: {

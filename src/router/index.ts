@@ -13,6 +13,11 @@ const router = createRouter({
       name: "rental",
       component: () => import("../views/Rental.vue"),
     },
+    {
+      path: "/costs/:address",
+      name: "costs",
+      component: () => import("../views/Calculator.vue"),
+    },
   ],
 });
 
