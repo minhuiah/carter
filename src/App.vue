@@ -3,6 +3,7 @@ import { defineComponent } from "vue";
 import rawCarparkData from "@/assets/data/carparks.json";
 import proj4 from "proj4";
 import { Icon } from "@vicons/utils";
+import Sidebar from "@/views/Sidebar.vue";
 import {
   MapMarkerAlt,
   Car,
@@ -38,43 +39,9 @@ export default defineComponent({
     LocationArrow,
     DollarSign,
     Sort,
+    Sidebar,
   },
-  mounted() {
-    this.axios
-      .get("https://api.data.gov.sg/v1/transport/carpark-availability")
-      .then((data) => {
-        for (let carpark of data.data.items[0].carpark_data) {
-          for (let c of rawCarparkData) {
-            if (c.car_park_no === carpark.carpark_number) {
-              let coords = proj4(
-                "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs",
-                "+proj=longlat +datum=WGS84 +no_defs",
-                [c.x_coord, c.y_coord]
-              );
-              this.carparkData.push({
-                lat: coords[0],
-                lng: coords[1],
-                availableLots: carpark.carpark_info[0].lots_available,
-                totalLots: carpark.carpark_info[0].total_lots,
-                address: c.address,
-                type:
-                  c.car_park_type === -1
-                    ? "Basement"
-                    : c.car_park_type === 0
-                    ? "Surface"
-                    : "MSCP",
-                system: c.type_of_parking_system === 0 ? "Coupon" : "EPS",
-                shortTermParking: c.short_term_parking === 0 ? "No" : "Yes",
-                freeParking: c.free_parking,
-                nightParking: c.night_parking === 0 ? false : true,
-                carParkDecks: c.car_park_decks,
-                gantryHeight: c.gantry_height,
-              });
-            }
-          }
-        }
-      });
-  },
+
   methods: {
     displayCarparkDetail(carpark: Carpark) {
       this.selectedCarpark = carpark;
@@ -109,7 +76,25 @@ export default defineComponent({
 
 <template>
   <div class="app">
-    <div class="panel">
+    <div class="side">
+      <div class="nav">
+        <RouterLink
+          :to="{ name: 'carparks' }"
+          class="nav-link"
+          router-link-active="nav-link-active"
+          >Carparks</RouterLink
+        >
+        <RouterLink
+          :to="{ name: 'rental' }"
+          class="nav-link"
+          router-link-active="nav-link-active"
+          >Rental</RouterLink
+        >
+      </div>
+      <Sidebar />
+    </div>
+    <RouterView />
+    <!-- <div class="panel">
       <div class="panel-header">Carter</div>
       <div>
         <button>Carpark</button>
@@ -199,35 +184,37 @@ export default defineComponent({
         </div>
       </div>
     </div>
-    <mapbox-map
-      class="map"
-      mapStyle="streets-v11"
-      :center="centerLocation"
-      :zoom="16"
-      accessToken="pk.eyJ1IjoiMWhpdW9uaiIsImEiOiJjbDlhcnNha2MwbWRtM3BxdDJ1d2psNTF5In0.3I_UAtOyTVSwLev2yEua8w"
-      :load="mapLoaded()"
-    >
-      <mapbox-geolocate-control />
-      <mapbox-navigation-control position="bottom-left" />
-      <mapbox-marker
-        @click="displayCarparkDetail(data)"
-        v-for="data in carparkData"
-        :lngLat="[data.lat, data.lng]"
-      >
-        <template v-slot:icon>
-          <div class="carpark-icon">
-            {{ data.availableLots }}
-          </div>
-        </template>
-      </mapbox-marker>
-    </mapbox-map>
-  </div>
+  --></div>
 </template>
 
 <style scoped>
 body {
   max-height: 100vh;
   width: 100%;
+}
+.side {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  border-right: 1px solid #f0f0f0;
+  height: 100%;
+  min-width: 400px;
+}
+.nav {
+  display: flex;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+.nav-link {
+  padding: 0 0.5rem;
+  margin: 0 0.5rem;
+  text-decoration: none;
+  color: rgb(26, 26, 26);
+  font-size: 0.9rem;
+}
+.router-link-active {
+  font-weight: bold;
+  color: #000000;
 }
 .app {
   width: 100vw;
@@ -236,7 +223,7 @@ body {
   display: flex;
   align-items: flex-start;
 }
-.map {
+/* .map {
   width: 100vw;
   height: 100vh;
   z-index: 0;
@@ -428,5 +415,5 @@ body {
   .carpark-detail {
     font-size: 0.8rem;
   }
-}
+} */
 </style>

@@ -9,6 +9,7 @@ import router from "./router";
 
 import "./assets/css/main.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useCarparkStore } from "./stores/Carparks";
 
 const app = createApp(App);
 
@@ -17,4 +18,7 @@ app.use(router);
 app.use(VueMapboxTs);
 app.use(VueAxios, axios);
 
-app.mount("#app");
+app.mount("#carter");
+
+const carpark = useCarparkStore();
+await carpark.get();
