@@ -21,4 +21,4 @@ app.use(VueAxios, axios);
 app.mount("#carter");
 
 const carpark = useCarparkStore();
-await carpark.get();
+carpark.get();
