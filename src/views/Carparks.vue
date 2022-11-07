@@ -1,10 +1,10 @@
 <template>
-  <!-- <mapbox-map
+  <mapbox-map
     class="map"
     mapStyle="mapbox://styles/mapbox/outdoors-v10?optimize=true"
     :zoom="16"
     accessToken="pk.eyJ1IjoiMWhpdW9uaiIsImEiOiJjbDlhcnNha2MwbWRtM3BxdDJ1d2psNTF5In0.3I_UAtOyTVSwLev2yEua8w"
-    :center="centerLocation"
+    :center="[location.lng, location.lat]"
   >
     <mapbox-geolocate-control />
     <mapbox-navigation-control position="bottom-left" />
@@ -15,28 +15,19 @@
         </div>
       </template>
     </mapbox-marker>
-  </mapbox-map> -->
+  </mapbox-map>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useCarparkStore } from "@/stores/Carparks";
 import { mapState } from "pinia";
+import { useMapStore } from "@/stores/Map";
 
 export default defineComponent({
-  data() {
-    return {
-      currentLocation: {
-        long: 103.852119,
-        lat: 1.296568,
-      },
-    };
-  },
   computed: {
-    centerLocation() {
-      return [this.currentLocation.long, this.currentLocation.lat];
-    },
     ...mapState(useCarparkStore, ["carparks"]),
+    ...mapState(useMapStore, ["location"]),
   },
 });
 </script>

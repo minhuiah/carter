@@ -1,7 +1,11 @@
 <template>
   <div class="list">
     <div v-if="$route.name === 'carparks'">
-      <div v-for="carpark in carparks" class="list-item">
+      <div
+        v-for="carpark in carparks"
+        class="list-item"
+        @click="flyToCarpark(carpark.lat, carpark.lng)"
+      >
         <div class="list-title">{{ carpark.address }}</div>
         <div class="list-row">
           <div class="list-meta">
@@ -98,12 +102,19 @@ import { mapState } from "pinia";
 import { defineComponent } from "vue";
 import { Icon } from "@vicons/utils";
 import { Directions, MoneyBill } from "@vicons/fa";
+import { useMapStore } from "@/stores/Map";
 
 export default defineComponent({
   components: {
     Icon,
     Directions,
     MoneyBill,
+  },
+  methods: {
+    flyToCarpark(lng: number, lat: number) {
+      const useMap = useMapStore();
+      useMap.flyTo(lng, lat);
+    },
   },
   computed: {
     ...mapState(useCarparkStore, ["carparks"]),
