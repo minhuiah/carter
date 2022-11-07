@@ -1,5 +1,5 @@
 <template>
-  <mapbox-map
+  <!-- <mapbox-map
     class="map"
     mapStyle="mapbox://styles/mapbox/outdoors-v10?optimize=true"
     :zoom="16"
@@ -15,7 +15,7 @@
         </div>
       </template>
     </mapbox-marker>
-  </mapbox-map>
+  </mapbox-map> -->
 </template>
 
 <script lang="ts">
