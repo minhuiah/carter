@@ -31,7 +31,6 @@ export const useRentalStore = defineStore("rentals", {
     async get() {
       let response = await axios.get("http://localhost:3000/rental");
       this.rentals = response.data.results;
-      console.log(this.rentals.length);
     },
   },
 });

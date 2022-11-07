@@ -13,7 +13,6 @@ export const useMapStore = defineStore("map", {
     flyTo(lng: number, lat: number) {
       this.location.lng = lng;
       this.location.lat = lat;
-      console.log(lng, lat);
     },
   },
 });
