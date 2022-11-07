@@ -10,9 +10,7 @@
     <mapbox-navigation-control position="bottom-left" />
     <mapbox-marker v-for="car in rentals" :lngLat="[car.lng, car.lat]">
       <template v-slot:icon>
-        <div class="carpark-icon">
-          {{ car.rental_status }}
-        </div>
+        <img class="icon" src="@/assets/images/bluecar.png" />
       </template>
     </mapbox-marker>
   </mapbox-map>
@@ -31,3 +29,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.icon {
+  height: 3rem;
+  width: 3rem;
+}
+</style>

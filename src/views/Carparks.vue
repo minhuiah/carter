@@ -31,3 +31,21 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.carpark-icon {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-weight: bold;
+  background-color: #000;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: 0.2s all;
+}
+</style>
