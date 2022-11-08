@@ -1,6 +1,6 @@
 <template>
   <div class="calculator">
-    <div class="calculator-title">Cost Tracker for</div>
+    <div class="calculator-title">Cost Table for</div>
     <div class="address">{{ $route.params.address }}</div>
     <div class="on">on a</div>
     <div class="day">{{ day }}</div>
@@ -16,35 +16,13 @@
         <tr v-for="carparkRate in cleanRate">
           <td>{{ carparkRate.day }}</td>
           <td>{{ carparkRate.startTime }} - {{ carparkRate.endTime }}</td>
-          <td>${{ carparkRate.rate.toFixed(2) }}</td>
+          <td>
+            {{ carparkRate.rate !== "Free" ? `$${carparkRate.rate}` : "Free" }}
+          </td>
         </tr>
       </tbody>
     </table>
-    <div>
-      <fieldset>
-        <label for="start">Start Time</label>
-        <input
-          type="time"
-          id="start"
-          name="start"
-          min="00:00"
-          max="23:59"
-          required
-        />
-      </fieldset>
-      <fieldset>
-        <label for="end">End Time</label>
-        <input
-          type="time"
-          id="end"
-          name="end"
-          min="00:00"
-          max="23:59"
-          required
-        />
-      </fieldset>
-    </div>
-    {{ cleanRate }}
+    <div @click="goCarparkPage()" class="back-btn">Back to Carpark Map</div>
   </div>
 </template>
 
@@ -129,12 +107,11 @@ export default defineComponent({
             for (let subRate of rate.rate) {
               let startTime = subRate.time_range.slice(0, 4);
               let endTime = subRate.time_range.slice(4);
-              console.log(dayParsed);
               data.push({
                 day: dayParsed,
                 startTime,
                 endTime,
-                rate: subRate.rate_cost,
+                rate: subRate.rate_cost === -1 ? "Free" : subRate.rate_cost,
               });
             }
           }
@@ -156,6 +133,11 @@ export default defineComponent({
     } else {
       return this.$router.push({ name: "carparks" });
     }
+  },
+  methods: {
+    goCarparkPage() {
+      this.$router.push({ name: "carparks" });
+    },
   },
 });
 </script>
@@ -200,5 +182,13 @@ export default defineComponent({
 .rate-table th {
   background-color: rgb(15, 10, 112);
   color: #fff;
+}
+.back-btn {
+  display: flex;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background-color: #000;
+  color: #fff;
+  margin-top: 2rem;
 }
 </style>
