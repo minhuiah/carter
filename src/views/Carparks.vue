@@ -5,6 +5,7 @@
     :zoom="16"
     accessToken="pk.eyJ1IjoiMWhpdW9uaiIsImEiOiJjbDlhcnNha2MwbWRtM3BxdDJ1d2psNTF5In0.3I_UAtOyTVSwLev2yEua8w"
     :center="[location.lng, location.lat]"
+    :auto-resize="true"
   >
     <mapbox-geolocate-control />
     <mapbox-navigation-control position="bottom-left" />
