@@ -258,6 +258,7 @@ export default defineComponent({
   justify-content: flex-start;
   width: 100%;
   border-top: 1px solid #e2e2e2;
+  z-index: 10;
 }
 .list-btn {
   display: flex;
