@@ -80,7 +80,6 @@ export default defineComponent({
           let days = rate.day.toString().split("");
           for (let day of days) {
             let dayParsed;
-            console.log(day);
             switch (parseInt(day)) {
               case 1:
                 dayParsed = "Monday";
