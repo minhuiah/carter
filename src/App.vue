@@ -3,7 +3,7 @@ import { defineComponent } from "vue";
 import Sidebar from "@/views/Sidebar.vue";
 import { useCarparkStore } from "./stores/Carparks";
 import { useRentalStore } from "./stores/Rental";
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useSpotlightStore } from "./stores/Spotlight";
 
 export default defineComponent({
@@ -43,6 +43,7 @@ export default defineComponent({
       const rentals = useRentalStore();
       rentals.get();
     },
+    ...mapActions(useSpotlightStore, ["deactivateSpotlight"]),
   },
   computed: {
     ...mapState(useSpotlightStore, ["data"]),
@@ -65,12 +66,14 @@ export default defineComponent({
               :to="{ name: 'carparks' }"
               class="nav-link"
               router-link-active="nav-link-active"
+              @click="deactivateSpotlight"
               >Carparks</RouterLink
             >
             <RouterLink
               :to="{ name: 'rental' }"
               class="nav-link"
               router-link-active="nav-link-active"
+              @click="deactivateSpotlight"
               >Rental</RouterLink
             >
           </div>

@@ -395,7 +395,7 @@ export default defineComponent({
         useMap.flyTo(location.lng, location.lat);
       }
       this.show(location);
-      this.spotlight = true;
+      this.activateSpotlight();
     },
     bookRentalCar() {
       window.open("https://membership.bluesg.com.sg/account/home/");
@@ -404,7 +404,11 @@ export default defineComponent({
       return (<Carpark>data).availableLots !== undefined;
     },
     toggleSpotlight() {
-      this.spotlight = !this.spotlight;
+      if (this.spotlight) {
+        this.deactivateSpotlight();
+      } else {
+        this.activateSpotlight();
+      }
     },
     getCarparkRates(address: string) {
       let data = [];
@@ -455,7 +459,11 @@ export default defineComponent({
       }
       return data;
     },
-    ...mapActions(useSpotlightStore, ["show"]),
+    ...mapActions(useSpotlightStore, [
+      "show",
+      "activateSpotlight",
+      "deactivateSpotlight",
+    ]),
   },
   computed: {
     day() {
@@ -480,13 +488,13 @@ export default defineComponent({
     },
     ...mapState(useCarparkStore, ["carparks"]),
     ...mapState(useRentalStore, ["rentals"]),
-    ...mapState(useSpotlightStore, ["data"]),
+    ...mapState(useSpotlightStore, ["data", "spotlight"]),
   },
   watch: {
     data: {
       handler(old) {
         if (Object.keys(old).length > 0) {
-          this.spotlight = true;
+          this.activateSpotlight();
         }
       },
       immediate: true,
@@ -494,7 +502,6 @@ export default defineComponent({
   },
   data() {
     return {
-      spotlight: false,
       rawCarparks,
       rates: [] as DayRate[] | DayRate,
     };
