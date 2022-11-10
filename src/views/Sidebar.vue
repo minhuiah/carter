@@ -80,6 +80,28 @@
           Carpark Decks: {{ (data as Carpark).carParkDecks }}
         </div>
         <div class="spotlight-meta">System: {{ (data as Carpark).system }}</div>
+        <table class="rate-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Time</th>
+              <th>Rates / 30 minutes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="carparkRate in getCarparkRates((data as Carpark).address)"
+            >
+              <td>{{ carparkRate.day }}</td>
+              <td>{{ carparkRate.startTime }} - {{ carparkRate.endTime }}</td>
+              <td>
+                {{
+                  carparkRate.rate !== "Free" ? `$${carparkRate.rate}` : "Free"
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div class="list-btn-group">
           <div class="list-btn">
             <svg
@@ -267,6 +289,22 @@ import { Directions, MoneyBill } from "@vicons/fa";
 import { useMapStore } from "@/stores/Map";
 import { useRentalStore, type Rental } from "@/stores/Rental";
 import { useSpotlightStore } from "@/stores/Spotlight";
+import rawCarparks from "@/assets/data/carparks.json";
+
+interface Rate {
+  time_range: string;
+  rate_cost: number;
+  rate_time: number;
+}
+
+interface DayRate {
+  day: number;
+  flat_rate: {
+    per_entry_rate: number;
+    flat_rate: number;
+  };
+  rate: Rate[];
+}
 
 export default defineComponent({
   components: {
@@ -293,9 +331,78 @@ export default defineComponent({
     toggleSpotlight() {
       this.spotlight = !this.spotlight;
     },
+    getCarparkRates(address: string) {
+      let data = [];
+      for (let carpark of rawCarparks) {
+        if (address === carpark.address) {
+          if (carpark.parking_rate instanceof Array) {
+            for (let rate of carpark.parking_rate) {
+              let days = rate.day.toString().split("");
+              for (let day of days) {
+                let dayParsed;
+                switch (parseInt(day)) {
+                  case 1:
+                    dayParsed = "Monday";
+                    break;
+                  case 2:
+                    dayParsed = "Tuesday";
+                    break;
+                  case 3:
+                    dayParsed = "Wednesday";
+                    break;
+                  case 4:
+                    dayParsed = "Thursday";
+                    break;
+                  case 5:
+                    dayParsed = "Friday";
+                    break;
+                  case 6:
+                    dayParsed = "Saturday";
+                    break;
+                  case 7:
+                    dayParsed = "Sunday";
+                    break;
+                }
+                for (let subRate of rate.rate) {
+                  let startTime = subRate.time_range.slice(0, 4);
+                  let endTime = subRate.time_range.slice(4);
+                  data.push({
+                    day: dayParsed,
+                    startTime,
+                    endTime,
+                    rate: subRate.rate_cost === -1 ? "Free" : subRate.rate_cost,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      return data;
+    },
     ...mapActions(useSpotlightStore, ["show"]),
   },
   computed: {
+    day() {
+      const d = new Date();
+      let day = d.getDay();
+      switch (day) {
+        case 0:
+          return "Sunday";
+        case 1:
+          return "Monday";
+        case 2:
+          return "Tuesday";
+        case 3:
+          return "Wednesday";
+        case 4:
+          return "Thursday";
+        case 5:
+          return "Friday";
+        case 6:
+          return "Saturday";
+      }
+    },
     ...mapState(useCarparkStore, ["carparks"]),
     ...mapState(useRentalStore, ["rentals"]),
     ...mapState(useSpotlightStore, ["data"]),
@@ -303,6 +410,8 @@ export default defineComponent({
   data() {
     return {
       spotlight: false,
+      rawCarparks,
+      rates: [] as DayRate[] | DayRate,
     };
   },
 });
@@ -464,5 +573,22 @@ export default defineComponent({
 .slide-fade-leave-to {
   transform: translateX(-20px);
   opacity: 0;
+}
+.rate-table {
+  width: calc(100% - 2rem);
+  margin-top: 1rem;
+  margin: 1rem 1rem;
+  box-sizing: border-box;
+}
+.rate-table,
+.rate-table th,
+.rate-table td {
+  border: 1px solid #5f5f5f;
+  padding: 0.5rem;
+}
+.rate-table th {
+  background-color: rgb(15, 10, 112);
+  color: #fff;
+  font-size: 0.8rem;
 }
 </style>
