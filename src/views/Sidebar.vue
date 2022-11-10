@@ -1,10 +1,108 @@
 <template>
   <div class="list">
-    <div v-if="$route.name === 'carparks'">
+    <Transition name="slide-fade">
+      <div
+        v-if="Object.keys(data).length > 0 && spotlight && isCarpark(data)"
+        class="spotlight"
+      >
+        <div class="spotlight-title">
+          {{ (data as Carpark).address }}
+          <div @click="toggleSpotlight()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              class="spotlight-icon"
+            >
+              <path
+                d="M289.94 256l95-95A24 24 0 0 0 351 127l-95 95l-95-95a24 24 0 0 0-34 34l95 95l-95 95a24 24 0 1 0 34 34l95-95l95 95a24 24 0 0 0 34-34z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </div>
+        </div>
+        <div class="spotlight-row">
+          <div class="spotlight-meta">
+            {{
+              (data as Carpark).freeParking === "NO"
+                ? "Paid parking available"
+                : "Free parking available"
+            }}
+          </div>
+          <div>
+            <div class="carpark-lots">
+              {{ (data as Carpark).availableLots }} /
+              {{ (data as Carpark).totalLots }}
+            </div>
+            <div class="carpark-indicator">
+              <div
+                class="indicator"
+                :class="
+                (data as Carpark).availableLots / (data as Carpark).totalLots >= 0.25
+                  ? 'indicator-green'
+                  : (data as Carpark).availableLots > 0
+                  ? 'indicator-orange'
+                  : ''
+              "
+              ></div>
+              <div
+                class="indicator"
+                :class="
+                (data as Carpark).availableLots / (data as Carpark).totalLots >= 0.5
+                  ? 'indicator-green'
+                  : ''
+              "
+              ></div>
+              <div
+                class="indicator"
+                :class="
+                (data as Carpark).availableLots / (data as Carpark).totalLots >= 0.75
+                  ? 'indicator-green'
+                  : ''
+              "
+              ></div>
+              <div
+                class="indicator"
+                :class="
+                (data as Carpark).availableLots / (data as Carpark).totalLots >= 0.9
+                  ? 'indicator-green'
+                  : ''
+              "
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="spotlight-meta">{{ (data as Carpark).type }} carpark</div>
+        <div class="spotlight-meta">
+          Height restrictions: {{ (data as Carpark).gantryHeight }}m
+        </div>
+        <div class="spotlight-meta">
+          Carpark Decks: {{ (data as Carpark).carParkDecks }}
+        </div>
+        <div class="spotlight-meta">System: {{ (data as Carpark).system }}</div>
+        <div class="list-btn-group">
+          <div class="list-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              class="list-btn-icon"
+            >
+              <path
+                d="M502.61 233.32L278.68 9.39c-12.52-12.52-32.83-12.52-45.36 0L9.39 233.32c-12.52 12.53-12.52 32.83 0 45.36l223.93 223.93c12.52 12.53 32.83 12.53 45.36 0l223.93-223.93c12.52-12.53 12.52-32.83 0-45.36zm-100.98 12.56l-84.21 77.73c-5.12 4.73-13.43 1.1-13.43-5.88V264h-96v64c0 4.42-3.58 8-8 8h-32c-4.42 0-8-3.58-8-8v-80c0-17.67 14.33-32 32-32h112v-53.73c0-6.97 8.3-10.61 13.43-5.88l84.21 77.73c3.43 3.17 3.43 8.59 0 11.76z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            <span class="list-btn-text">Get Directions</span>
+          </div>
+        </div>
+      </div>
+    </Transition>
+    <div v-if="$route.name === 'carparks'" v-show="!spotlight">
       <div
         v-for="carpark in carparks"
         class="list-item"
-        @click="flyToCarpark(carpark.lat, carpark.lng)"
+        @click="flyToCarpark(carpark)"
       >
         <div class="list-title">{{ carpark.address }}</div>
         <div class="list-row">
@@ -93,12 +191,8 @@
         </div>
       </div>
     </div>
-    <div v-if="$route.name === 'rental'">
-      <div
-        v-for="car in rentals"
-        class="list-item"
-        @click="flyToCarpark(car.lng, car.lat)"
-      >
+    <div v-if="$route.name === 'rental'" v-show="!spotlight">
+      <div v-for="car in rentals" class="list-item" @click="flyToCarpark(car)">
         <div class="list-title">{{ car.address }}</div>
         <div class="list-meta list-meta-car">
           <svg
@@ -165,13 +259,14 @@
 </template>
 
 <script lang="ts">
-import { useCarparkStore } from "@/stores/Carparks";
-import { mapState } from "pinia";
+import { useCarparkStore, type Carpark } from "@/stores/Carparks";
+import { mapActions, mapState } from "pinia";
 import { defineComponent } from "vue";
 import { Icon } from "@vicons/utils";
 import { Directions, MoneyBill } from "@vicons/fa";
 import { useMapStore } from "@/stores/Map";
-import { useRentalStore } from "@/stores/Rental";
+import { useRentalStore, type Rental } from "@/stores/Rental";
+import { useSpotlightStore } from "@/stores/Spotlight";
 
 export default defineComponent({
   components: {
@@ -180,9 +275,11 @@ export default defineComponent({
     MoneyBill,
   },
   methods: {
-    flyToCarpark(lng: number, lat: number) {
+    flyToCarpark(location: Carpark | Rental) {
       const useMap = useMapStore();
-      useMap.flyTo(lng, lat);
+      useMap.flyTo(location.lat, location.lng);
+      this.show(location);
+      this.spotlight = true;
     },
     bookRentalCar() {
       window.open("https://membership.bluesg.com.sg/account/home/");
@@ -190,10 +287,23 @@ export default defineComponent({
     trackCost(address: string) {
       this.$router.push({ name: "costs", params: { address } });
     },
+    isCarpark(data: Carpark | Rental): data is Carpark {
+      return (<Carpark>data).availableLots !== undefined;
+    },
+    toggleSpotlight() {
+      this.spotlight = !this.spotlight;
+    },
+    ...mapActions(useSpotlightStore, ["show", "remove"]),
   },
   computed: {
     ...mapState(useCarparkStore, ["carparks"]),
     ...mapState(useRentalStore, ["rentals"]),
+    ...mapState(useSpotlightStore, ["data"]),
+  },
+  data() {
+    return {
+      spotlight: false,
+    };
   },
 });
 </script>
@@ -298,5 +408,61 @@ export default defineComponent({
 .list-meta-car {
   display: flex;
   align-items: center;
+}
+.spotlight {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+.spotlight-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  background-color: #3d3d3d;
+  color: #fff;
+  width: 100%;
+  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.spotlight-icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.spotlight-meta {
+  font-size: 0.8rem;
+  margin: 0.2rem 0;
+  padding: 0rem 1rem;
+}
+.spotlight-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0rem 1rem;
+  box-sizing: border-box;
+}
+.spotlight-row > .spotlight-meta {
+  padding: 0;
+}
+.slide-fade-enter-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-20px);
+  opacity: 0;
 }
 </style>
