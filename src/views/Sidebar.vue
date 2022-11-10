@@ -103,7 +103,7 @@
           </tbody>
         </table>
         <div class="list-btn-group">
-          <div class="list-btn">
+          <div class="list-btn spotlight-directions-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -590,5 +590,8 @@ export default defineComponent({
   background-color: rgb(15, 10, 112);
   color: #fff;
   font-size: 0.8rem;
+}
+.spotlight-directions-btn {
+  flex: 100%;
 }
 </style>
