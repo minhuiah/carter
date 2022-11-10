@@ -9,7 +9,11 @@
   >
     <mapbox-geolocate-control />
     <mapbox-navigation-control position="bottom-left" />
-    <mapbox-marker v-for="car in rentals" :lngLat="[car.lng, car.lat]">
+    <mapbox-marker
+      v-for="car in rentals"
+      :lngLat="[car.lng, car.lat]"
+      @click="show(car)"
+    >
       <template v-slot:icon>
         <img class="icon" src="@/assets/images/bluecar.png" />
       </template>
@@ -19,14 +23,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useMapStore } from "@/stores/Map";
 import { useRentalStore } from "@/stores/Rental";
+import { useSpotlightStore } from "@/stores/Spotlight";
 
 export default defineComponent({
   computed: {
     ...mapState(useRentalStore, ["rentals"]),
     ...mapState(useMapStore, ["location"]),
+  },
+  methods: {
+    ...mapActions(useSpotlightStore, ["show"]),
   },
 });
 </script>

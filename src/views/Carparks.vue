@@ -9,7 +9,11 @@
   >
     <mapbox-geolocate-control />
     <mapbox-navigation-control position="bottom-left" />
-    <mapbox-marker v-for="data in carparks" :lngLat="[data.lat, data.lng]">
+    <mapbox-marker
+      v-for="data in carparks"
+      :lngLat="[data.lat, data.lng]"
+      @click="show(data)"
+    >
       <template v-slot:icon>
         <div class="carpark-icon">
           {{ data.availableLots }}
@@ -21,14 +25,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useCarparkStore } from "@/stores/Carparks";
-import { mapState } from "pinia";
+import { useCarparkStore, type Carpark } from "@/stores/Carparks";
+import { mapActions, mapState } from "pinia";
 import { useMapStore } from "@/stores/Map";
+import { useSpotlightStore } from "@/stores/Spotlight";
 
 export default defineComponent({
   computed: {
     ...mapState(useCarparkStore, ["carparks"]),
     ...mapState(useMapStore, ["location"]),
+  },
+  methods: {
+    ...mapActions(useSpotlightStore, ["show"]),
   },
 });
 </script>

@@ -482,6 +482,16 @@ export default defineComponent({
     ...mapState(useRentalStore, ["rentals"]),
     ...mapState(useSpotlightStore, ["data"]),
   },
+  watch: {
+    data: {
+      handler(old) {
+        if (Object.keys(old).length > 0) {
+          this.spotlight = true;
+        }
+      },
+      immediate: true,
+    },
+  },
   data() {
     return {
       spotlight: false,

@@ -3,6 +3,8 @@ import { defineComponent } from "vue";
 import Sidebar from "@/views/Sidebar.vue";
 import { useCarparkStore } from "./stores/Carparks";
 import { useRentalStore } from "./stores/Rental";
+import { mapState } from "pinia";
+import { useSpotlightStore } from "./stores/Spotlight";
 
 export default defineComponent({
   mounted() {
@@ -40,6 +42,14 @@ export default defineComponent({
       carpark.get();
       const rentals = useRentalStore();
       rentals.get();
+    },
+  },
+  computed: {
+    ...mapState(useSpotlightStore, ["data"]),
+  },
+  watch: {
+    data() {
+      this.sidebar = true;
     },
   },
 });
