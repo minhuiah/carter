@@ -1,6 +1,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import Sidebar from "@/views/Sidebar.vue";
+import { useCarparkStore } from "./stores/Carparks";
+import { useRentalStore } from "./stores/Rental";
 
 export default defineComponent({
   mounted() {
@@ -33,6 +35,12 @@ export default defineComponent({
         return false;
       }
     },
+    refreshData() {
+      const carpark = useCarparkStore();
+      carpark.get();
+      const rentals = useRentalStore();
+      rentals.get();
+    },
   },
 });
 </script>
@@ -56,17 +64,39 @@ export default defineComponent({
               >Rental</RouterLink
             >
           </div>
-          <div class="sidebar-btn" @click="toggleSidebar">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M21.29 4.12L16.7 8.71l1.59 1.59c.63.63.18 1.71-.71 1.71H13c-.55 0-1-.45-1-1v-4.6c0-.89 1.08-1.34 1.71-.71l1.59 1.59l4.59-4.59a.996.996 0 0 1 1.41 0c.38.4.38 1.03-.01 1.42zM4.12 21.29l4.59-4.59l1.59 1.59c.63.63 1.71.18 1.71-.71V13c0-.55-.45-1-1-1h-4.6c-.89 0-1.34 1.08-.71 1.71l1.59 1.59l-4.59 4.59a.996.996 0 0 0 0 1.41c.4.38 1.03.38 1.42-.01z"
-                fill="currentColor"
-              ></path>
-            </svg>
+          <div class="nav-right">
+            <div class="sidebar-btn refresh-btn" @click="refreshData">
+              <svg
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                viewBox="0 0 512 512"
+                enable-background="new 0 0 512 512"
+                xml:space="preserve"
+              >
+                <g>
+                  <path
+                    d="M256,388c-72.597,0-132-59.405-132-132c0-72.601,59.403-132,132-132c36.3,0,69.299,15.4,92.406,39.601L278,234h154V80
+      l-51.698,51.702C348.406,99.798,304.406,80,256,80c-96.797,0-176,79.203-176,176s78.094,176,176,176
+      c81.045,0,148.287-54.134,169.401-128H378.85C360.105,353.561,311.712,388,256,388z"
+                  ></path>
+                </g>
+              </svg>
+            </div>
+            <div class="sidebar-btn" @click="toggleSidebar">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21.29 4.12L16.7 8.71l1.59 1.59c.63.63.18 1.71-.71 1.71H13c-.55 0-1-.45-1-1v-4.6c0-.89 1.08-1.34 1.71-.71l1.59 1.59l4.59-4.59a.996.996 0 0 1 1.41 0c.38.4.38 1.03-.01 1.42zM4.12 21.29l4.59-4.59l1.59 1.59c.63.63 1.71.18 1.71-.71V13c0-.55-.45-1-1-1h-4.6c-.89 0-1.34 1.08-.71 1.71l1.59 1.59l-4.59 4.59a.996.996 0 0 0 0 1.41c.4.38 1.03.38 1.42-.01z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
           </div>
         </div>
         <Sidebar />
@@ -180,5 +210,13 @@ body {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.refresh-btn {
+  margin-right: 1rem;
 }
 </style>
