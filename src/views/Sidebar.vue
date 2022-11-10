@@ -293,7 +293,7 @@ export default defineComponent({
     toggleSpotlight() {
       this.spotlight = !this.spotlight;
     },
-    ...mapActions(useSpotlightStore, ["show", "remove"]),
+    ...mapActions(useSpotlightStore, ["show"]),
   },
   computed: {
     ...mapState(useCarparkStore, ["carparks"]),
