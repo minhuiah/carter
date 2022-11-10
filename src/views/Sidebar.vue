@@ -120,6 +120,94 @@
         </div>
       </div>
     </Transition>
+    <Transition name="slide-fade">
+      <div
+        v-if="Object.keys(data).length > 0 && spotlight && !isCarpark(data)"
+        class="spotlight"
+      >
+        <div class="spotlight-title">
+          {{ (data as Rental).address }}
+          <div @click="toggleSpotlight()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              class="spotlight-icon"
+            >
+              <path
+                d="M289.94 256l95-95A24 24 0 0 0 351 127l-95 95l-95-95a24 24 0 0 0-34 34l95 95l-95 95a24 24 0 1 0 34 34l95-95l95 95a24 24 0 0 0 34-34z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </div>
+        </div>
+        <div class="list-meta list-meta-car spotlight-meta">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 512 512"
+            class="list-car-icon"
+          >
+            <path
+              d="M499.99 176h-59.87l-16.64-41.6C406.38 91.63 365.57 64 319.5 64h-127c-46.06 0-86.88 27.63-103.99 70.4L71.87 176H12.01C4.2 176-1.53 183.34.37 190.91l6 24C7.7 220.25 12.5 224 18.01 224h20.07C24.65 235.73 16 252.78 16 272v48c0 16.12 6.16 30.67 16 41.93V416c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32v-32h256v32c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32v-54.07c9.84-11.25 16-25.8 16-41.93v-48c0-19.22-8.65-36.27-22.07-48H494c5.51 0 10.31-3.75 11.64-9.09l6-24c1.89-7.57-3.84-14.91-11.65-14.91zm-352.06-17.83c7.29-18.22 24.94-30.17 44.57-30.17h127c19.63 0 37.28 11.95 44.57 30.17L384 208H128l19.93-49.83zM96 319.8c-19.2 0-32-12.76-32-31.9S76.8 256 96 256s48 28.71 48 47.85s-28.8 15.95-48 15.95zm320 0c-19.2 0-48 3.19-48-15.95S396.8 256 416 256s32 12.76 32 31.9s-12.8 31.9-32 31.9z"
+              fill="currentColor"
+            ></path>
+          </svg>
+          BlueCars: {{ (data as Rental).cars_counter.bluecar }}
+        </div>
+        <div class="list-meta list-meta-car spotlight-meta">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            viewBox="0 0 640 512"
+            class="list-car-icon"
+          >
+            <path
+              d="M544 192h-16L419.22 56.02A64.025 64.025 0 0 0 369.24 32H155.33c-26.17 0-49.7 15.93-59.42 40.23L48 194.26C20.44 201.4 0 226.21 0 256v112c0 8.84 7.16 16 16 16h48c0 53.02 42.98 96 96 96s96-42.98 96-96h128c0 53.02 42.98 96 96 96s96-42.98 96-96h48c8.84 0 16-7.16 16-16v-80c0-53.02-42.98-96-96-96zM160 432c-26.47 0-48-21.53-48-48s21.53-48 48-48s48 21.53 48 48s-21.53 48-48 48zm72-240H116.93l38.4-96H232v96zm48 0V96h89.24l76.8 96H280zm200 240c-26.47 0-48-21.53-48-48s21.53-48 48-48s48 21.53 48 48s-21.53 48-48 48z"
+              fill="currentColor"
+            ></path>
+          </svg>
+          Opel Ecorsa: {{ (data as Rental).cars_counter.opel_ecorsa }}
+        </div>
+        <div class="spotlight-meta">
+          Charging slots: {{ (data as Rental).charge_slots }}
+        </div>
+
+        <div class="list-btn-group spotlight-btn-group">
+          <div class="list-btn spotlight-directions-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              class="list-btn-icon"
+            >
+              <path
+                d="M502.61 233.32L278.68 9.39c-12.52-12.52-32.83-12.52-45.36 0L9.39 233.32c-12.52 12.53-12.52 32.83 0 45.36l223.93 223.93c12.52 12.53 32.83 12.53 45.36 0l223.93-223.93c12.52-12.53 12.52-32.83 0-45.36zm-100.98 12.56l-84.21 77.73c-5.12 4.73-13.43 1.1-13.43-5.88V264h-96v64c0 4.42-3.58 8-8 8h-32c-4.42 0-8-3.58-8-8v-80c0-17.67 14.33-32 32-32h112v-53.73c0-6.97 8.3-10.61 13.43-5.88l84.21 77.73c3.43 3.17 3.43 8.59 0 11.76z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            <span class="list-btn-text">Get Directions</span>
+          </div>
+          <div
+            class="list-btn spotlight-directions-btn"
+            @click="bookRentalCar()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              viewBox="0 0 512 512"
+              class="list-btn-icon"
+            >
+              <path
+                d="M502.61 233.32L278.68 9.39c-12.52-12.52-32.83-12.52-45.36 0L9.39 233.32c-12.52 12.53-12.52 32.83 0 45.36l223.93 223.93c12.52 12.53 32.83 12.53 45.36 0l223.93-223.93c12.52-12.53 12.52-32.83 0-45.36zm-100.98 12.56l-84.21 77.73c-5.12 4.73-13.43 1.1-13.43-5.88V264h-96v64c0 4.42-3.58 8-8 8h-32c-4.42 0-8-3.58-8-8v-80c0-17.67 14.33-32 32-32h112v-53.73c0-6.97 8.3-10.61 13.43-5.88l84.21 77.73c3.43 3.17 3.43 8.59 0 11.76z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            <span class="list-btn-text">Book now</span>
+          </div>
+        </div>
+      </div>
+    </Transition>
     <div v-if="$route.name === 'carparks'" v-show="!spotlight">
       <div
         v-for="carpark in carparks"
@@ -301,7 +389,11 @@ export default defineComponent({
   methods: {
     flyToCarpark(location: Carpark | Rental) {
       const useMap = useMapStore();
-      useMap.flyTo(location.lat, location.lng);
+      if (this.isCarpark(location)) {
+        useMap.flyTo(location.lat, location.lng);
+      } else {
+        useMap.flyTo(location.lng, location.lat);
+      }
       this.show(location);
       this.spotlight = true;
     },
@@ -576,5 +668,8 @@ export default defineComponent({
 }
 .spotlight-directions-btn {
   flex: 100%;
+}
+.spotlight-btn-group {
+  margin-top: 1rem;
 }
 </style>
