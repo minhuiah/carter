@@ -26,4 +26,17 @@ window.addEventListener('scroll',function(){
     header.classList.toggle("sticky", window.scrollY > 0);
 });
 
-//Responsive navigation menu toggle
+//redirect
+
+document.getElementById("findCarPark").onclick = function () {
+    location.href = "https://carter.pages.dev/";
+};
+
+document.getElementById("rental").onclick = function () {
+    location.href = "https://carter.pages.dev/";
+};
+
+
+document.getElementById("lots").onclick = function () {
+    location.href = "https://carter.pages.dev/";
+};

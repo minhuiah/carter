@@ -72,7 +72,7 @@ header{
 
 header.sticky{
   height: calc(2.5rem + 1rem);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(7, 9, 26, 0.1);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -87,9 +87,9 @@ header .nav-bar{
   transition: 0.3s ease;
 }
 
-.nav-close-btn, .nav-menu-btn{
+/* .nav-close-btn, .nav-menu-btn{
   display: none;
-}
+} */
 
 .nav-bar .logo{
   color: var(--white-color);
@@ -105,7 +105,7 @@ header .nav-bar{
   color:var(--white-color);
   font-size: 1em;
   text-decoration: none;
-  text-shadow: var(--text-shadow);
+  /* text-shadow: var(--text-shadow); */
 
 }
 
@@ -118,10 +118,19 @@ header .nav-bar{
 }
 
 /*** HOME ***/
-.home{
+.home,.contact{
   min-height:100vh;
 }
-
+.fastest,.POI{
+  min-height: 40vh;
+  text-align: center;
+  padding:35px;
+}
+.rent{
+  min-height: 20vh;
+  text-align: center;
+  padding: 35px;
+}
 /*======= Background Slider =======*/
 .bg-slider{
   z-index: 777;
@@ -151,6 +160,20 @@ header .nav-bar{
   color: var(--white-color);
   margin: 0 200px;
   transition: 0.3s ease;
+}
+
+/***ABOUT CONTENT1***/
+.content1 .text-content{
+  position: absolute;
+  top: 45%;
+  color: var(--white-color);
+  margin: 0 200px;
+}
+
+.content2 .text-content, .content3 .text-content{
+  top:20%;
+  color: var(--white-color);
+  margin: 0 200px;
 }
 
 .swiper-slide .text-content .title{
@@ -220,7 +243,7 @@ header .nav-bar{
 .experience{
   border: 2px solid;
   width: 100vw;
-  height: 40vh;
+  /* height: 20vh; */
   background-color: #343A40;
 }
 
@@ -247,13 +270,15 @@ header .nav-bar{
   header .nav-bar {
     padding: 0 50px;
   }
-  .experience{
+  .experience,.fastest,.POI,.rent{
     padding:25px 50px;
     transition: 0.3s ease;
   }
   .swiper-slide .text-content{
     margin: 0 120px 0 50px;
   }
+ 
+
 }
 
 /*======= Media Queries (MAX-WIDTH:785px)=======*/
@@ -263,7 +288,7 @@ header .nav-bar{
       padding: 25px 50px;
     }
 
-    .experience{
+    .experience,.fastest,.POI,.rent{
       padding: 25px 20px;
     }
 
@@ -274,5 +299,13 @@ header .nav-bar{
     .swiper-slide .text-content .title{
       font-size: 3em;
     }
+  
+
 }
 
+
+/*======= ABOUT=======*/
+
+.fastest, .contact, .POI, .rent{
+  background-color: #777d84;
+}
