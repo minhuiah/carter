@@ -1,107 +1,56 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import rawCarparkData from "@/assets/data/carparks.json";
-import proj4 from "proj4";
-import { Icon } from "@vicons/utils";
-import {
-  MapMarkerAlt,
-  Car,
-  Buffer,
-  ArrowsAltV,
-  LocationArrow,
-  DollarSign,
-  Sort,
-} from "@vicons/fa";
-
-interface Carpark {
-  lat: number;
-  lng: number;
-  availableLots: number;
-  totalLots: number;
-  address: string;
-  type: string;
-  system: string;
-  shortTermParking: string;
-  freeParking: string;
-  nightParking: boolean;
-  carParkDecks: string;
-  gantryHeight: string;
-}
+import Sidebar from "@/views/Sidebar.vue";
+import { useCarparkStore } from "./stores/Carparks";
+import { useRentalStore } from "./stores/Rental";
+import { mapActions, mapState } from "pinia";
+import { useSpotlightStore } from "./stores/Spotlight";
 
 export default defineComponent({
-  components: {
-    Icon,
-    MapMarkerAlt,
-    Car,
-    Buffer,
-    ArrowsAltV,
-    LocationArrow,
-    DollarSign,
-    Sort,
-  },
   mounted() {
-    this.axios
-      .get("https://api.data.gov.sg/v1/transport/carpark-availability")
-      .then((data) => {
-        for (let carpark of data.data.items[0].carpark_data) {
-          for (let c of rawCarparkData) {
-            if (c.car_park_no === carpark.carpark_number) {
-              let coords = proj4(
-                "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs",
-                "+proj=longlat +datum=WGS84 +no_defs",
-                [c.x_coord, c.y_coord]
-              );
-              this.carparkData.push({
-                lat: coords[0],
-                lng: coords[1],
-                availableLots: carpark.carpark_info[0].lots_available,
-                totalLots: carpark.carpark_info[0].total_lots,
-                address: c.address,
-                type:
-                  c.car_park_type === -1
-                    ? "Basement"
-                    : c.car_park_type === 0
-                    ? "Surface"
-                    : "MSCP",
-                system: c.type_of_parking_system === 0 ? "Coupon" : "EPS",
-                shortTermParking: c.short_term_parking === 0 ? "No" : "Yes",
-                freeParking: c.free_parking,
-                nightParking: c.night_parking === 0 ? false : true,
-                carParkDecks: c.car_park_decks,
-                gantryHeight: c.gantry_height,
-              });
-            }
-          }
-        }
-      });
-  },
-  methods: {
-    displayCarparkDetail(carpark: Carpark) {
-      this.selectedCarpark = carpark;
-    },
-    mapLoaded() {
-      // TODO: Prevent map pop-ups from appearing before map is loaded
-    },
-    goToGoogleMaps() {
-      window.open(
-        `https://www.google.com/maps?daddr=${this.selectedCarpark.lng},${this.selectedCarpark.lat}`
-      );
-    },
+    if (this.isMobile()) {
+      this.sidebar = false;
+    } else {
+      this.sidebar = true;
+    }
   },
   data() {
     return {
-      currentLocation: {
-        long: 103.852119,
-        lat: 1.296568,
-      },
-      rawCarparkData,
-      carparkData: [] as Carpark[],
-      selectedCarpark: {} as Carpark,
+      sidebar: true,
     };
   },
+  components: {
+    Sidebar,
+  },
+  methods: {
+    toggleSidebar() {
+      this.sidebar = !this.sidebar;
+    },
+    isMobile() {
+      if (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    refreshData() {
+      const carpark = useCarparkStore();
+      carpark.get();
+      const rentals = useRentalStore();
+      rentals.get();
+    },
+    ...mapActions(useSpotlightStore, ["deactivateSpotlight"]),
+  },
   computed: {
-    centerLocation() {
-      return [this.currentLocation.long, this.currentLocation.lat];
+    ...mapState(useSpotlightStore, ["data"]),
+  },
+  watch: {
+    data() {
+      this.sidebar = true;
     },
   },
 });
@@ -109,118 +58,78 @@ export default defineComponent({
 
 <template>
   <div class="app">
-    <div class="panel">
-      <div class="panel-header">Carter</div>
-      <div>
-        <button>Carpark</button>
-        <button>Car Rental</button>
-        <button></button>
-      </div>
-      <div
-        class="panel-description"
-        v-show="!selectedCarpark || Object.keys(selectedCarpark).length === 0"
-      >
-        <img class="logo" src="./assets/images/logo.png" />
-        <div class="panel-description-text">
-          <h1 class="panel-title">Welcome to Carter!</h1>
-          <p class="panel-text">This web app allows you to:</p>
-          <ul class="panel-text-list">
-            <li>View carparks and its lot availability near you</li>
-            <li>View rental cars near you</li>
-            <li>Calculate cost for a trip</li>
-            <li>Routing</li>
-            <li>View Point of Interests around you</li>
-          </ul>
-          <p class="panel-text">
-            This project is built with Vue JS and it is
-            <a target="_blank" href="https://github.com/19hours/carter"
-              >open source.</a
+    <Transition name="slide-fade">
+      <div class="side" v-if="sidebar">
+        <div class="nav">
+          <div class="nav-left">
+            <RouterLink
+              :to="{ name: 'carparks' }"
+              class="nav-link"
+              router-link-active="nav-link-active"
+              @click="deactivateSpotlight"
+              >Carparks</RouterLink
             >
-          </p>
-        </div>
-      </div>
-      <div
-        class="carpark-info"
-        v-show="selectedCarpark && Object.keys(selectedCarpark).length !== 0"
-      >
-        <div class="carpark-row">
-          <Icon>
-            <MapMarkerAlt />
-          </Icon>
-          <div class="carpark-detail">{{ selectedCarpark.address }}</div>
-        </div>
-        <button class="carpark-btn" @click="goToGoogleMaps()">
-          <Icon><LocationArrow /></Icon>
-          <span class="carpark-btn-text">Get Directions</span>
-        </button>
-        <div class="carpark-row">
-          <Icon>
-            <Car />
-          </Icon>
-          <div class="carpark-detail">
-            <div class="available-lots">
-              {{ selectedCarpark.availableLots }}
+            <RouterLink
+              :to="{ name: 'rental' }"
+              class="nav-link"
+              router-link-active="nav-link-active"
+              @click="deactivateSpotlight"
+              >Rental</RouterLink
+            >
+          </div>
+          <div class="nav-right">
+            <div class="sidebar-btn refresh-btn" @click="refreshData">
+              <svg
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                viewBox="0 0 512 512"
+                enable-background="new 0 0 512 512"
+                xml:space="preserve"
+              >
+                <g>
+                  <path
+                    d="M256,388c-72.597,0-132-59.405-132-132c0-72.601,59.403-132,132-132c36.3,0,69.299,15.4,92.406,39.601L278,234h154V80
+      l-51.698,51.702C348.406,99.798,304.406,80,256,80c-96.797,0-176,79.203-176,176s78.094,176,176,176
+      c81.045,0,148.287-54.134,169.401-128H378.85C360.105,353.561,311.712,388,256,388z"
+                  ></path>
+                </g>
+              </svg>
             </div>
-            <div class="dash-lots">/</div>
-            <div class="total-lots">
-              {{ selectedCarpark.totalLots }}
+            <div class="sidebar-btn" @click="toggleSidebar">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M21.29 4.12L16.7 8.71l1.59 1.59c.63.63.18 1.71-.71 1.71H13c-.55 0-1-.45-1-1v-4.6c0-.89 1.08-1.34 1.71-.71l1.59 1.59l4.59-4.59a.996.996 0 0 1 1.41 0c.38.4.38 1.03-.01 1.42zM4.12 21.29l4.59-4.59l1.59 1.59c.63.63 1.71.18 1.71-.71V13c0-.55-.45-1-1-1h-4.6c-.89 0-1.34 1.08-.71 1.71l1.59 1.59l-4.59 4.59a.996.996 0 0 0 0 1.41c.4.38 1.03.38 1.42-.01z"
+                  fill="currentColor"
+                ></path>
+              </svg>
             </div>
           </div>
         </div>
-        <div class="carpark-row">
-          <Icon>
-            <Buffer />
-          </Icon>
-          <div class="carpark-detail">
-            Decks: {{ selectedCarpark.carParkDecks }}
-          </div>
-        </div>
-        <div class="carpark-row">
-          <Icon>
-            <ArrowsAltV />
-          </Icon>
-          <div class="carpark-detail">
-            Height Restrictions: {{ selectedCarpark.gantryHeight }} m
-          </div>
-        </div>
-        <div class="carpark-row">
-          <Icon>
-            <DollarSign />
-          </Icon>
-          <div class="carpark-detail">
-            Free Parking: {{ selectedCarpark.freeParking }}
-          </div>
-        </div>
-        <div class="carpark-row">
-          <Icon>
-            <Sort />
-          </Icon>
-          <div class="carpark-detail">Type: {{ selectedCarpark.type }}</div>
-        </div>
+        <Sidebar />
       </div>
-    </div>
-    <mapbox-map
-      class="map"
-      mapStyle="streets-v11"
-      :center="centerLocation"
-      :zoom="16"
-      accessToken="pk.eyJ1IjoiMWhpdW9uaiIsImEiOiJjbDlhcnNha2MwbWRtM3BxdDJ1d2psNTF5In0.3I_UAtOyTVSwLev2yEua8w"
-      :load="mapLoaded()"
-    >
-      <mapbox-geolocate-control />
-      <mapbox-navigation-control position="bottom-left" />
-      <mapbox-marker
-        @click="displayCarparkDetail(data)"
-        v-for="data in carparkData"
-        :lngLat="[data.lat, data.lng]"
-      >
-        <template v-slot:icon>
-          <div class="carpark-icon">
-            {{ data.availableLots }}
-          </div>
-        </template>
-      </mapbox-marker>
-    </mapbox-map>
+    </Transition>
+    <Transition>
+      <div v-if="!sidebar" class="sidebar-open-btn" @click="toggleSidebar">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M4 18h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zm0-5h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1zM3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1z"
+            fill="currentColor"
+          ></path>
+        </svg>
+      </div>
+    </Transition>
+    <RouterView />
   </div>
 </template>
 
@@ -229,6 +138,32 @@ body {
   max-height: 100vh;
   width: 100%;
 }
+.side {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  border-right: 1px solid #f0f0f0;
+  height: 100%;
+  min-width: 400px;
+}
+.nav {
+  display: flex;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  justify-content: space-between;
+  align-items: center;
+}
+.nav-link {
+  padding: 0 0.5rem;
+  margin: 0 0.5rem;
+  text-decoration: none;
+  color: rgb(26, 26, 26);
+  font-size: 0.9rem;
+}
+.router-link-active {
+  font-weight: bold;
+  color: #000000;
+}
 .app {
   width: 100vw;
   height: 100vh;
@@ -236,197 +171,65 @@ body {
   display: flex;
   align-items: flex-start;
 }
-.map {
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
+.sidebar-btn {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
-.panel {
+.sidebar-btn:hover {
+  cursor: pointer;
+}
+@media (max-width: 992px) {
+  .side {
+    width: 100vw;
+    min-width: 100vw;
+  }
+}
+.sidebar-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
   position: absolute;
+  left: 1rem;
+  top: 1rem;
   z-index: 10;
-  margin: 5rem;
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background-color: #ffffff;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background-color: #000000;
+  color: #fff;
 }
-.logo {
-  height: 120px;
-  width: 120px;
+.sidebar-open-btn > svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
-.panel-header {
-  background-color: #2e42a8;
-  color: #ffffff;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #eee;
-  width: 100%;
-  text-align: center;
-  border-top-right-radius: 4px;
-  border-top-left-radius: 4px;
-}
-.panel-description {
-  display: flex;
-  align-items: flex-start;
-  padding: 1rem;
-}
-.panel-description-text {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex-direction: column;
-  margin-left: 1.4rem;
-}
-.panel-title {
-  font-size: 1.5rem;
-}
-.panel-text {
-  font-size: 0.9rem;
-  margin: 1rem 0;
-}
-.panel-text-list {
-  list-style-type: lower-alpha;
-  font-size: 0.9rem;
-  list-style-position: inside;
-  margin-bottom: 1rem;
-}
-.carpark-icon {
-  height: 2rem;
-  width: 2rem;
-  border-radius: 4px;
-  border: 2px solid #ffffff;
-  color: #ffffff;
-  font-weight: bold;
-  background-color: #2e42a8;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  transition: 0.2s all;
+.slide-fade-enter-active {
+  transition: all 0.25s ease-out;
 }
 
-.carpark-icon:hover {
-  background-color: #ffffff;
-  color: #2e42a8;
-  border: 2px solid #2e42a8;
+.slide-fade-leave-active {
+  transition: all 0.25s ease;
 }
-.carpark-info {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: scroll;
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(-100px);
+  opacity: 0;
 }
-.carpark-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.2s ease;
 }
-.carpark-detail {
-  margin-left: 1rem;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
-.carpark-btn {
-  border-radius: 4px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  background-color: #2ea85b;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  width: 100%;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  text-align: center;
-  border: none;
-  color: #fff;
-  padding: 12px 20px;
-  margin-bottom: 8px;
-  text-decoration: none;
-  margin-bottom: 2rem;
+.nav-right {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.available-lots {
-  padding: 0 2px 0 6px;
-  background-color: green;
-  color: white;
-  font-weight: bold;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.dash-lots {
-  padding: 0px 6px;
-  background-color: #2e42a8;
-  color: white;
-  font-weight: bold;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.total-lots {
-  padding: 0 6px 0 0;
-  background-color: #2e42a8;
-  color: white;
-  font-weight: bold;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.carpark-btn-text {
-  margin-left: 0.5rem;
-  font-weight: bold;
-}
-@media (max-width: 960px) {
-  .app {
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .panel {
-    max-width: 100vw;
-    margin-bottom: 0rem;
-    max-height: 50vh;
-    -webkit-backdrop-filter: blur(10px) saturate(3);
-    -webkit-backdrop-filter: blur(10px) saturate(3);
-    backdrop-filter: blur(10px) saturate(3);
-    background-color: #ffffffb3;
-  }
-  .panel-title {
-    font-size: 1.2rem;
-  }
-  .logo {
-    width: 60px;
-    height: 60px;
-  }
-  .panel-text,
-  .panel-text-list {
-    font-size: 0.8rem;
-    margin: 0.5rem 0;
-  }
-  .carpark-row {
-    margin-bottom: 0.7rem;
-  }
-  .carpark-detail {
-    font-size: 0.8rem;
-  }
+.refresh-btn {
+  margin-right: 1rem;
 }
 </style>
